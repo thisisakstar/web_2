@@ -1,0 +1,86 @@
+extends layout/base
+
+block block     
+    // Breadcrumb Section
+    .breadcrumb-style
+        nav.container-xl.mt-1(aria-label='breadcrumb')
+            ol.breadcrumb
+                li.breadcrumb-item
+                    a.text-secondary(href='/') Home
+                li.breadcrumb-item
+                    a.text-secondary(href='/shop') Shop
+                li.breadcrumb-item
+                    a.text-secondary(href='#') Products
+                li.breadcrumb-item
+                    a.text-secondary(href='/order/checkout') Check-Out
+                li.breadcrumb-item.active(aria-current='page')
+                    | Confirm Order
+    // Verfication and Price Section
+    .container-xl
+        .row.border-top
+            // Product Verfifcation Section
+            .col-md-8.p-3.border-end
+                .p-3.bg-white
+                    h6.text-dark.fw-bold.mb-4.text-uppercase
+                        | Review items and delivery
+                    each doc in docs.products
+                        .border.rounded.p-1.mt-2
+                            h6.fw-bold
+                                | Delivery date: 
+                                span.main-light 16 Jun 2023
+                            .row.p-2
+                                .col-3
+                                    img.confirm-product-img.m-auto(src=doc.bannerImage alt='mouse corsair')
+                                .col-9
+                                    h6.fw-bold.mt-3=doc.name
+                                    h6.fw-bold
+                                        if doc.discountPrice
+                                            span $#{doc.discountPrice}
+                                            span.main-light.text-decoration-line-through
+                                                | $#{doc.price}
+                                        else
+                                            span $#{doc.price}
+                                    if doc.type === "colorOnly" || doc.type === "colorWithSize"
+                                        h6.fw-bold
+                                            | Color :
+                                            span.fw-normal.ms-2.text-secondary= doc.color
+                                    if doc.type === "sizeOnly" || doc.type === "colorWithSize"
+                                        h6.fw-bold
+                                            | Size :
+                                            span.fw-normal.ms-2.text-secondary= doc.size
+
+
+                                    h6.fw-bold
+                                        | Quantity :
+                                        span.fw-normal.ms-2.text-secondary= doc.quantity
+                                    //- p.text-secondary
+                                        | Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                        | Deserunt quisquam dolor, nostrum dicta repudiandae
+                                        | doloremque.
+
+            // Price Section
+            .col-md-4.p-3
+                .p-3.bg-white
+                    h6.text-dark.fw-bold.mb-2.text-uppercase Order Summary
+                    .row
+                        .col-6
+                            p.text-secondary Total price:
+                        .col-6
+                            p.text-secondary.float-end $#{docs.price}
+                    .row
+                        .col-6
+                            p.text-secondary Discount:
+                        .col-6
+                            p.text-success.float-end $#{docs.discountPrice}
+                    .row
+                        .col-6
+                            p.text-secondary TAX:
+                        .col-6
+                            p.text-secondary.float-end $20
+                    hr
+                    .row
+                        .col-6
+                            p.text-secondary Final price:
+                        .col-6
+                            p.text-secondary.fw-bold.float-end $#{docs.finalPrice}
+                    a.buy-now.d-block.text-center#place_order(type="button" data-id=address) Place Order

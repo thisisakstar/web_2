@@ -1,0 +1,145 @@
+extends layout/base
+
+block block  
+    // Carousel slide section
+    div
+        #carouselExampleCaptions.carousel.slide
+            .carousel-indicators
+                button.active(type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='0' aria-current='true' aria-label='Slide 1')
+                button(type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='1' aria-label='Slide 2')
+                button(type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide-to='2' aria-label='Slide 3')
+            .carousel-inner
+                .carousel-item.active
+                    img.d-block.w-100(src='./Assets/Images/banner3.png' alt='...')
+                .carousel-item
+                    img.d-block.w-100(src='./Assets/Images/banner2.png' alt='...')
+                .carousel-item
+                    img.d-block.w-100(src='./Assets/Images/banner1.png' alt='...')
+            button.carousel-control-prev(type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide='prev')
+                span.carousel-control-prev-icon(aria-hidden='true')
+                span.visually-hidden Previous
+            button.carousel-control-next(type='button' data-bs-target='#carouselExampleCaptions' data-bs-slide='next')
+                span.carousel-control-next-icon(aria-hidden='true')
+                span.visually-hidden Next
+    // Today's Deal Section
+    .bg-white.mt-3
+        .container-xl.pt-3.pb-3
+            h5.text-uppercase.fw-bold.fs-5.title-text.mb-5
+                | TODAY&apos;S DEAL
+        .container-fluid
+            .swiper
+                .slide-container.swiper1
+                    .card-wrapper.swiper-wrapper
+                        each doc in docs.dealOfTheDay
+                            a(href=`/shop/product/${doc.slug}`)
+                                .card.swiper-slide
+                                    img.product(src=doc.bannerImage alt='mouse corsair')
+                                    div
+                                        a.text-dark()=doc.name
+                                        if doc.discountPrice
+                                            p.p-0.m-0.fw-bold.fw-bold $ #{doc.discountPrice} 
+                                                span.text-decoration-line-through.text-secondary $ #{doc.price}
+                                                -const dis = ((doc.price-doc.discountPrice)/doc.price)*100
+                                                |(#{Math.floor(dis)}% OFF)
+                                        else 
+                                            p.p-0.m-0.fw-bold.fw-bold $ #{doc.price} (0% OFF)
+
+
+                    .swiper-button-next.swiper-navBtn
+                    .swiper-button-prev.swiper-navBtn
+                    .swiper-pagination.swiper-pagination-1
+   
+    // Top Deal of the Product
+    .bg-white.mt-3
+        .container-xl.pt-3.pb-3
+            h5.text-uppercase.fw-bold.fs-5.title-text.mb-5
+                | Top Deal of the Product
+        .container-fluid
+            .swiper
+                .slide-container.swiper1
+                    .card-wrapper.swiper-wrapper
+                        each doc in docs.topDeals
+                            a(href=`/shop/product/${doc.slug}`)
+                                .card.swiper-slide
+                                    img.product(src=doc.bannerImage alt=doc.name)
+                                    div.text-center
+                                        a.text-dark.fs-4()= doc.name
+                                        if doc.discountPrice
+                                            p.p-0.m-0.fw-bold.fw-bold.fs-5 $ #{doc.discountPrice} 
+                                                span.text-decoration-line-through.text-secondary $ #{doc.price}
+                                                -const dis = ((doc.price-doc.discountPrice)/doc.price)*100
+                                                |(#{Math.floor(dis)}% OFF)
+                                        else 
+                                            p.p-0.m-0.fw-bold.fw-bold.fs-5 $ #{doc.price} (0% OFF)
+
+                    .swiper-button-next.swiper-navBtn
+                    .swiper-button-prev.swiper-navBtn
+                    .swiper-pagination.swiper-pagination-1
+    // Top Selling Product
+    .bg-white.mt-3
+        .container-xl.pt-3.pb-3
+            h5.text-uppercase.fw-bold.fs-5.title-text.mb-5
+                | Top Selling Product
+        .container-fluid
+           .swiper
+                .slide-container.swiper1
+                    .card-wrapper.swiper-wrapper
+                        each doc in docs.topSetllingProducts
+                            a(href=`/shop/product/${doc.slug}`)
+                                .card.swiper-slide
+                                    img.product(src=doc.bannerImage alt='mouse corsair')
+                                    div
+                                        a.text-dark()=doc.name
+                                        if doc.discountPrice
+                                            p.p-0.m-0.fw-bold.fw-bold $ #{doc.discountPrice} 
+                                                span.text-decoration-line-through.text-secondary $ #{doc.price}
+                                                -const dis = ((doc.price-doc.discountPrice)/doc.price)*100
+                                                |(#{Math.floor(dis)}% OFF)
+                                        else 
+                                            p.p-0.m-0.fw-bold.fw-bold $ #{doc.price} (0% OFF)
+
+
+                    .swiper-button-next.swiper-navBtn
+                    .swiper-button-prev.swiper-navBtn
+                    .swiper-pagination.swiper-pagination-1
+   
+    // Category
+    .bg-white.mt-3
+        .container-xl.pt-3.pb-3
+            h5.text-uppercase.fw-bold.fs-5.title-text.mb-5
+                | SHOP BY CATEGORY
+            .row.row-cols-2.row-cols-md-3.row-cols-lg-5.g-1
+             each doc in docs.top3Categories
+                a.col(href=`/shop?category=${doc.name}`)
+                    .card.card-w.h-100
+                        img.card-img.w-100(src=doc.bannerImage alt=doc.name)
+                        .img-overlay
+                            h5.card-title.text-white.text-center=doc.name
+                            p.card-text.text-white.text-center Shop now
+    // Recommended Product
+    .bg-white.mt-3
+        .container-xl.pt-3.pb-3
+            h5.text-uppercase.fw-bold.fs-5.title-text.mb-5
+                | Recommended Product
+        .container-fluid
+            .swiper
+                .slide-container.swiper1
+                    .card-wrapper.swiper-wrapper
+                        each doc in docs.recommendedProduct
+                            a(href=`/shop/product/${doc.slug}`)
+                                .card.swiper-slide
+                                    img.product(src=doc.bannerImage alt='mouse corsair')
+                                    div
+                                        a.text-dark()=doc.name
+                                        if doc.discountPrice
+                                            p.p-0.m-0.fw-bold.fw-bold $ #{doc.discountPrice} 
+                                                span.text-decoration-line-through.text-secondary $ #{doc.price}
+                                                -const dis = ((doc.price-doc.discountPrice)/doc.price)*100
+                                                |(#{Math.floor(dis)}% OFF)
+                                        else 
+                                            p.p-0.m-0.fw-bold.fw-bold $ #{doc.price} (0% OFF)
+
+
+                    .swiper-button-next.swiper-navBtn
+                    .swiper-button-prev.swiper-navBtn
+                    .swiper-pagination.swiper-pagination-1

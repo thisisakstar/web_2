@@ -1,0 +1,237 @@
+extends layout/base
+
+mixin filters(fors)
+    hr
+    h6.mb-2.mt-2 Categorys
+    - let updatedUrl = new URL(url);
+    - updatedUrl.searchParams.get('category');
+    - let params = updatedUrl.searchParams.get('category');
+    - updatedUrl.searchParams.delete('category');
+    - let urlCategory = updatedUrl.toString()
+    - urlCategory = urlCategory.split('?').length <= 1 ? `${urlCategory}?` :`${urlCategory}&`;
+    - urlCategory = new URL(urlCategory);
+    -  urlCategory = urlCategory.href.split(urlCategory.origin)[1]
+    - params = !!params ? params : ""
+    each doc,i in category
+        .form-check
+            - let uParams = params.split(',');
+            - const cateCheck = uParams.includes(doc.name) ? true :false;
+            - const index = uParams.indexOf(doc.name);
+            - cateCheck ? uParams.splice(index,1) : uParams.push(doc.name) ;
+            input.form-check-input(type='checkbox' value='',checked=cateCheck 
+            onClick=`window.location = '${urlCategory}category=${uParams.join(',').replace(/(^,|,$|,,)/g, '')}';`,id=`cat-check-${i}` )
+            label.form-check-label(for=`cat-check-${i}`)
+                | #{doc.name}
+
+        // Price Filter
+    hr
+    h6.mb-2.mt-2 Price 
+    - let updateUrl = new URL(url);
+    - let min = updateUrl.searchParams.get('min')
+    - let max = updateUrl.searchParams.get('max')
+    - updateUrl.searchParams.delete('min');
+    - updateUrl.searchParams.delete('max');
+    - let priceCal = updateUrl.toString()
+    - priceCal = priceCal.split('?').length <= 1 ? `${priceCal}?` :`${priceCal}&`;
+    - priceCal = new URL(priceCal);
+    - priceCal = priceCal.href.split(priceCal.origin)[1];
+
+    .row
+        .col-6
+            .mb-3
+                label.form-label(for='minPrice') Min
+                input.form-control.search-width(type='number' id=`minPrice_${fors}` placeholder='Min' value=min)
+        .col-6
+            .mb-3
+                label.form-label(for='maxPrice') Max
+                input.form-control.search-width(type='number' id=`maxPrice_${fors}` placeholder='Max' value=max)
+    a.wishlist-add.d-block.text-center.mt-0.ms-0.p-1(id=`filter_price_${fors}` href='#') Apply Price
+    #rmPrice
+        script.
+            document.getElementById(`filter_price_#{fors}`).addEventListener('click',e=>{
+            e.preventDefault();
+            let newUrl ="#{priceCal}".replace(/&amp;/g, '&');
+            newUrl= new URL(window.location.origin+newUrl)
+            let min = document.getElementById(`minPrice_#{fors}`).value;
+            let max = document.getElementById(`maxPrice_#{fors}`).value;
+            min = Math.abs(min);
+            max = Math.abs(max);
+            if(min >= max && !!max){
+                return alert('Minimum price should be less then Maximum Price.')
+            }
+            newUrl.searchParams.set("min" ,min ? min : 0);
+            if(max) {
+                newUrl.searchParams.set("max" ,max);
+            }else
+                newUrl.searchParams.delete('max');
+
+            return location.assign(newUrl);
+
+            });
+            document.getElementById('rmPrice').remove()
+
+        // Size Filter
+    - let updatedSizeUrl = new URL(url);
+    - let sParams = updatedSizeUrl.searchParams.get('size');
+    hr
+    h6.mb-2.mt-2 Size
+    - updatedSizeUrl.searchParams.delete('size');
+    - let urlSize = updatedSizeUrl.toString()
+    - urlSize = urlSize.split('?').length <= 1 ? `${urlSize}?` :`${urlSize}&`;
+    - urlSize = new URL(urlSize);
+    -  urlSize = urlSize.href.split(urlSize.origin)[1]
+    - sParams = !!sParams ? sParams : ""
+    .d-flex
+        each doc,i in size
+            - let uParams = sParams.split(',');
+            - const reg = new RegExp((doc),"i")
+            - const cateCheck = uParams.some(siz => reg.test(siz)) ? true :false;
+            - const index = uParams.indexOf(doc);
+            - cateCheck ? uParams.splice(index,1) : uParams.push(doc) ;
+            div.ms-2
+                input.btn-check(type='checkbox' id=`size-${i}` checked=cateCheck  autocomplete='off' onClick=`window.location = '${urlSize}size=${uParams.join(',').replace(/(^,|,$|,,)/g, '')}';`)
+                label.btn.btn-outline-main-light(for=`size-${i}`)= doc
+        // Color Filter
+    - let updatedColorUrl = new URL(url);
+    - let cParams = updatedColorUrl.searchParams.get('color');
+    hr
+    h6.mb-2.mt-2 Colors
+    - updatedColorUrl.searchParams.delete('color');
+    - let urlColor = updatedColorUrl.toString()
+    - urlColor = urlColor.split('?').length <= 1 ? `${urlColor}?` :`${urlColor}&`;
+    - urlColor = new URL(urlColor);
+    - urlColor = urlColor.href.split(urlColor.origin)[1]
+    - cParams = !!cParams ? cParams : ""
+    each doc,i in color
+        - let cdParams = cParams.split(',');
+        - const reg = new RegExp(doc,"i")
+        - const colorCheck = cdParams.some(col => reg.test(col)) ? true :false;
+        - const index = cdParams.indexOf(doc);
+        - colorCheck ? cdParams.splice(index,1) : cdParams.push(doc) ;
+        .form-check
+            input.form-check-input(type='checkbox' checked=colorCheck  value='' id=`color-${i}` onClick=`window.location = '${urlColor}color=${cdParams.join(',').replace(/(^,|,$|,,)/g, '')}';`)
+            label.form-check-label(for=`color-${i}`)
+                i.bi.bi-circle-fill.me-2(style=`color:${doc};`)
+                | #{doc}
+
+        // Rating Filter
+    - let updatedRatingUrl = new URL(url);
+    - let rParams = updatedRatingUrl.searchParams.get('rating');
+    hr
+    h6.mb-2.mt-2 Ratings
+    - updatedRatingUrl.searchParams.delete('rating');
+    - let urlRating = updatedRatingUrl.toString()
+    - urlRating = urlRating.split('?').length <= 1 ? `${urlRating}?` :`${urlRating}&`;
+    - urlRating = new URL(urlRating);
+    - urlRating = urlRating.href.split(urlRating.origin)[1]
+    - rParams = !!rParams ? rParams : ""
+    each doc,i in [1,2,3,4,5]
+        - let rdParams = rParams.split(',');
+        - const val = 5 - doc +1;
+        - const rateCheck = rdParams.includes(val.toString()) ? true :false;
+        - const index = rdParams.indexOf(val.toString());
+        - rateCheck ? rdParams.splice(index,1) : rdParams.push(val) ;
+        .form-check
+            input.form-check-input(type='checkbox' value='' id=`rate-${i}` checked=rateCheck onClick=`window.location = '${urlRating}rating=${rdParams.join(',').replace(/(^,|,$|,,)/g, '')}';`)
+            label.form-check-label(for=`rate-${i}`)
+                .d-flex
+                    each docs in [5,4,3,2,1]
+                        i.bi.main-light(class=docs < doc ? "bi-star" : "bi-star-fill")
+
+
+block block 
+    // Breadcrumb Section
+    .breadcrumb-style
+        nav.container-fluid.mt-1(aria-label='breadcrumb')
+            ol.breadcrumb
+                li.breadcrumb-item
+                    a.text-secondary(href='/') Home
+                li.breadcrumb-item.active(aria-current='page')
+                    | Products
+    // Mobile Filter Offcanvas component
+    -url = decodeURIComponent(url)
+    #offcanvasWithBothOptionsFilter.offcanvas.offcanvas-start.p-0(data-bs-scroll='true' tabindex='-1' aria-labelledby='offcanvasWithBothOptionsLabel')
+        .offcanvas-header.bg-main-light
+            a#offcanvasWithBothOptionsLabel.side-nav-sign(href='#')
+                | Filters
+            i.bi.bi-x-lg.cursor-pointer(data-bs-dismiss='offcanvas' aria-label='Close')
+        .offcanvas-body.p-2
+            +filters("mobile")
+
+    // Product Filter and list Section
+    .container-fluid
+        .row
+            // Filter Section
+            .col-md-3.p-3.Filter-section.border-end.border-top
+                .bg-white.p-3
+                    p.text-secondary.fw-bold FILTERS
+                    +filters("web")
+            // Product List Section
+            .col-md-9.p-3.border-top
+                .bg-white.p-2.mb-2
+                    .d-flex.justify-content-between
+                        i.bi.bi-funnel-fill.Fillter-icon(data-bs-toggle='offcanvas' data-bs-target='#offcanvasWithBothOptionsFilter' aria-controls='offcanvasWithBothOptionsFilter')
+                        div
+                        - const data = new URL(url);
+                        - const sortData = data.searchParams.get('sort');
+                        select.form-select.w-25.p-1.sort#sort_data(aria-label='Default select example')
+                            each val,key in {'default':"Default",'low':"Low to High",'high':"High to Low"}
+                                if sortData === key
+                                    option(value=key selected)=val
+                                else
+                                    option(value=key )=val
+                        #sort_product_data 
+                            script.
+                                document.getElementById('sort_data').addEventListener('change',e=>{
+                                    e.preventDefault();
+                                    let updatedUrl = new URL(window.location.href);
+                                    updatedUrl.searchParams.set('sort', e.target.value)
+                                    return location.assign(updatedUrl)
+                                })
+                                document.getElementById('sort_product_data').remove()
+
+                .bg-white.p-3
+                    // Product Cards
+                    .row.row-cols-2.row-cols-md-4.g-1
+                        each doc in docs
+                            .col.h-100
+                                a(href=`/shop/product/${doc.slug}`).h-100
+                                    .main-product-card.position-relative.h-100
+                                        .position-relative.wish-text
+                                            img.cart-product-img(src=`${doc.bannerImage}` alt='mouse corsair')
+                                            a.wishlist-add.d-block.text-center.ms-0.p-1.wish-add(type="button" class=`add_to_wishlist` data-id=doc.ecmpeId)
+                                                    i.bi.bi-heart Wishlist
+                                        .Content-section
+                                            a.text-uppercase.fw-bold.text-dark.one-line(href='#')
+                                                |#{doc.name}
+                                            p.m-0.p-0.text-secondary.product-des.one-line
+                                                | #{doc.description}
+                                            if doc.discountPrice
+                                                p.p-0.m-0.fw-bold
+                                                    | Rs.#{doc.discountPrice}
+                                                    span.text-secondary.fw-normal.text-decoration-line-through.product-des Rs.#{doc.price}
+                                                    span.fw-normal.main-light.product-des
+                                                        | (#{Math.floor(((doc.price-doc.discountPrice)/doc.price)*100)}% OFF)
+                                            else 
+                                                p.p-0.m-0.fw-bold
+                                                    | Rs.#{doc.price}
+
+
+                                            .d-felx
+                                                each docv in [1,2,3,4,5]
+                                                    i.bi.main-light(class=docv <= doc.ratingsAverage ? "bi-star-fill" : "bi-star")
+                                            
+                    // pagination Section
+                    nav.mt-5(aria-label='Page navigation example')
+                        ul.pagination.justify-content-center
+                            li.page-item
+                                a.page-link.pagination_manage(type="button" aria-label='Previous' data-type="pre")
+                                    span(aria-hidden='true') &laquo;
+                            li.page-item
+                                - const datas = new URL(url);
+                                - let num = datas.searchParams.get('page');
+                                - num = !!num*1?num : 1;
+                                a.page-link.active#page_no()=num 
+                            li.page-item
+                                button.page-link.pagination_manage(type="button" aria-label='Next' disabled=docs.length ? false : true class=docs.length ? "" :"bg-light" data-type="next")
+                                    span(aria-hidden='true' ) &raquo;

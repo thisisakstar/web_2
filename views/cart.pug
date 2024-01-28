@@ -1,0 +1,203 @@
+extends layout/base
+
+block block
+    // Breadcrumb Section
+    .breadcrumb-style
+        nav.container-xl.mt-1(aria-label='breadcrumb')
+            ol.breadcrumb
+                li.breadcrumb-item
+                    a.text-secondary(href='/') Home
+                li.breadcrumb-item.active(aria-current='page') My Cart
+    // Cart Product Price Section
+    .container-xl
+        .row.border-top
+            // Cart Product Section
+            .col-md-8.p-3
+                .p-2.bg-white
+                    input#prival(type="hidden" value=docs.price)
+                    input#disprival(type="hidden" value=docs.discountPrice)
+                    input#finalprival(type="hidden" value=docs.finalPrice)
+                    each doc,i in docs.products
+                        .row.mt-2.border.p-2.rounded
+                            .col-sm-3
+                                img.similer-product-img(src=doc.bannerImage alt='mouse corsair')
+                            .col-sm-8
+                                h6.text-dark.fw-bold=doc.name
+                                    if doc.type === "colorOnly" || doc.type === "colorWithSize"
+                                        p 
+                                            span.fw-bold Color : 
+                                            span.color-main= doc.color
+                                    if doc.type === "sizeOnly" || doc.type === "colorWithSize"
+                                        p 
+                                            span.fw-bold Size : 
+                                            span= doc.size
+                                .d-flex
+                                    p.m-0.input-size.p-1.ps-3.pe-3.border.cursor-pointer.sub_quantity(id=`sub_quantity${i}` data-index=i)
+                                        | -
+                                    p.m-0.input-count.p-1.ps-4.pe-4.border.count_quantity(id=`count_quantity${i}` data-id=doc.id)=doc.quantity
+                                    p.m-0.input-size.p-1.ps-3.pe-3.border.cursor-pointer.add_quantity(id=`add_quantity${i}` data-index=i)
+                                        | +
+                                if doc.discountPrice
+                                    span.h6.fw-bold.m-0.p-0.mt-2(id=`discountPriceT${i}`) $#{doc.discountPrice * doc.quantity}
+                                    span.ms-2.text-decoration-line-through.text-secondary.fw-normal.fs-6(id=`priceT${i}`) $#{doc.price * doc.quantity}
+                                else
+                                    h6.fw-bold.m-0.p-0.mt-2(id=`priceT${i}`) $#{doc.price * doc.quantity}
+                                p.text-secondary.m-0.p-0 $#{!!doc.discountPrice ? doc.discountPrice : doc.price } / per item
+                                #rm_cart_script
+                                    script.
+                                        document.getElementById(`sub_quantity#{i}`).addEventListener('click',e=>{
+                                            let price = "#{doc.price}";
+                                            let discountPrice = "#{doc.discountPrice}";
+                                            price = price * 1;
+                                            discountPrice = discountPrice * 1;
+                                            e.preventDefault();
+                                            const val = document.getElementById(`count_quantity#{i}`);
+                                            if (val.innerText * 1 === 1) {
+                                                return false;
+                                            }
+                                            if (val) {
+                                                val.innerText = val.innerText * 1 - 1;
+                                                const priceT = document.getElementById(`priceT#{i}`);
+                                                const discountPriceT = document.getElementById(`discountPriceT#{i}`);
+                                                const prival = document.getElementById("prival");
+                                                const disprival = document.getElementById("disprival");
+                                                const finalprival = document.getElementById("finalprival");
+
+                                                const totalPrice = document.getElementById("totalPrice");
+                                                const discountdPrice = document.getElementById("discountdPrice");
+                                                const finalPrice = document.getElementById("finalPrice");
+
+                                                if(discountPrice && discountPriceT){
+                                                    discountPriceT.innerText = "$"+discountPrice * val.innerText;
+                                                    priceT.innerText = "$"+price * val.innerText;
+
+                                                    prival.value = prival.value*1 - price;
+                                                    disprival.value = disprival.value*1 - discountPrice;
+                                                    finalprival.value = finalprival.value*1 - discountPrice;
+
+                                                    totalPrice.innerText = "$"+prival.value;
+                                                    discountdPrice.innerText = "$"+disprival.value;
+                                                    finalPrice.innerText = "$"+finalprival.value;
+                                                }else                                                    {
+                                                    priceT.innerText = "$"+price * val.innerText;
+                                                    prival.value = prival.value - price;
+                                                    finalprival.value = finalprival.value - price;
+
+                                                    totalPrice.innerText = "$"+prival.value;
+                                                    finalPrice.innerText = "$"+finalprival.value;
+                                                    }
+                                            }
+
+                                        });
+                                        document.getElementById(`add_quantity#{i}`).addEventListener('click',e=>{
+                                            e.preventDefault();
+                                            let price = "#{doc.price}";
+                                            let discountPrice = "#{doc.discountPrice}";
+                                            price = price * 1;
+                                            discountPrice = discountPrice * 1;
+                                            const val = document.getElementById(`count_quantity#{i}`);
+                                            if (val.innerText * 1 === 10) {
+                                                return false;
+                                            }
+                                                if (val) {
+                                                val.innerText = val.innerText * 1 + 1;
+                                                const priceT = document.getElementById(`priceT#{i}`);
+                                                const discountPriceT = document.getElementById(`discountPriceT#{i}`);
+                                                const prival = document.getElementById("prival");
+                                                const disprival = document.getElementById("disprival");
+                                                const finalprival = document.getElementById("finalprival");
+
+                                                const totalPrice = document.getElementById("totalPrice");
+                                                const discountdPrice = document.getElementById("discountdPrice");
+                                                const finalPrice = document.getElementById("finalPrice");
+
+                                                if(discountPrice && discountPriceT){
+                                                    discountPriceT.innerText = "$"+discountPrice * val.innerText;
+                                                    priceT.innerText = "$"+price * val.innerText;
+
+                                                    prival.value = prival.value*1 + price;
+                                                    disprival.value = disprival.value*1 + discountPrice;
+                                                    finalprival.value = finalprival.value*1 + discountPrice;
+
+                                                    totalPrice.innerText = "$"+prival.value;
+                                                    discountdPrice.innerText = "$"+disprival.value;
+                                                    finalPrice.innerText = "$"+finalprival.value;
+                                                }else                                                    {
+                                                    priceT.innerText = "$"+price * val.innerText;
+                                                    prival.value = prival.value*1 + price;
+                                                    finalprival.value = finalprival.value*1 + price;
+
+                                                    totalPrice.innerText = "$"+prival.value;
+                                                    finalPrice.innerText = "$"+finalprival.value;
+                                                    }
+                                            }
+                                        });
+                                        document.getElementById('rm_cart_script').remove();
+                            .col-sm-1
+                                a.float-end.d-block.text-center.remove_cart.fs-3.text-secondary(type="button" data-id=doc.id) 
+                                    i.bi.bi-x
+                    hr
+                    h6.text-secondary
+                        i.bi.bi-truck.fs-4
+                        |  Free Delivery within 1-2 weeks
+                    p.text-secondary
+                        | Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint
+                        | debitis voluptate qui harum placeat deserunt recusandae
+                        | consequuntur eaque. Cum odio tempora adipisci perferendis facere
+                        | aut accusamus. Accusamus quia itaque ab?
+            // Price Section
+            .col-md-4.p-3.border-start
+                //- .p-3.bg-white.mb-3
+                    h6 Have coupon?
+                    .input-group
+                        input.form-control.search-box(type='text' placeholder='Code...' aria-label='Search...' aria-describedby='button-addon2')
+                        button#button-addon2.btn.btn-search(type='button')
+                            | APPLY
+                .p-3.bg-white
+                    .row
+                        .col-6
+                            p.text-secondary Total price:
+                        .col-6
+                            p.text-secondary.float-end#totalPrice $#{docs.price}
+                    .row
+                        .col-6
+                            p.text-secondary Discount:
+                        .col-6
+                            p.text-success.float-end#discountdPrice $#{docs.discountPrice}
+                    .row
+                        .col-6
+                            p.text-secondary TAX:
+                        .col-6
+                            p.text-secondary.float-end $20
+                    hr
+                    .row
+                        .col-6
+                            p.text-secondary Final price:
+                        .col-6
+                            p.text-secondary.fw-bold.float-end#finalPrice $#{docs.finalPrice}
+                    a.buy-now.d-block.text-center#cart_to_checkout(type="button") Move to Checkout
+                    a.wishlist-add.d-block.text-center.ms-0(href='/shop') Back to shop
+        hr
+        p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase Recommended Products
+        .container-fluid
+                .swiper
+                    .slide-container.swiper1
+                        .card-wrapper.swiper-wrapper
+                            each doc in recommendedProduct
+                                a(href=`/shop/product/${doc.slug}`)
+                                    .card.swiper-slide
+                                        img.product(src=doc.bannerImage alt='mouse corsair')
+                                        div
+                                            a.text-dark()=doc.name
+                                            if doc.discountPrice
+                                                p.p-0.m-0.fw-bold.fw-bold $ #{doc.discountPrice} 
+                                                    span.text-decoration-line-through.text-secondary $ #{doc.price}
+                                                    -const dis = ((doc.price-doc.discountPrice)/doc.price)*100
+                                                    |(#{Math.floor(dis)}% OFF)
+                                            else 
+                                                p.p-0.m-0.fw-bold.fw-bold $ #{doc.price} (0% OFF)
+
+
+                        .swiper-button-next.swiper-navBtn
+                        .swiper-button-prev.swiper-navBtn
+                        .swiper-pagination.swiper-pagination-1

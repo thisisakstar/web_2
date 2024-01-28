@@ -1,0 +1,183 @@
+extends layout/base
+
+block block 
+    // Breadcrumb Section
+    .breadcrumb-style
+        nav.container-xl.mt-1(aria-label='breadcrumb')
+            ol.breadcrumb
+                li.breadcrumb-item
+                    a.text-secondary(href='/') Home
+                li.breadcrumb-item
+                    a.text-secondary(href='/shop') Shop
+                li.breadcrumb-item.active(aria-current='page') Details
+    // Product Section
+    .bg-white.pb-4
+        .container-xl
+            .row.m-0#product_id(data-id=doc.ecmpeId)
+                .col-sm-6.m-0.text-center.mt-1
+                    //- img.main-product-img.m-0.d-none(src=doc.bannerImage alt='mouse corsair')
+                    .mt-3.justify-content-center.row#gal_image
+                        each docs in doc.imageGallery
+                            .col-6
+                                img.m-0.small-product-img(src=docs alt='mouse corsair')
+                .col-sm-6.m-0
+                    h4.mt-4#product_type.fw-bold(data-product=doc.productType)= doc.name
+                    p.text-secondary.mt-4.fs-5.two-line= doc.description
+                    .d-flex.justify-content-start.mt-3
+                        each docv in [1,2,3,4,5]
+                            i.bi.main-light(class=docv <= doc.ratingsAverage ? "bi-star-fill" : "bi-star")
+
+                        p.ms-2 (#{doc.ratingsAverage} Ratings)
+                    hr.p-0.m-0
+                    h3.fw-bold#price_details
+                        if doc.discountPrice
+                            span.font-size-big Rs. #{doc.discountPrice}
+                            span.text-decoration-line-through.text-secondary.fw-normal.font-size-big Rs.#{doc.price}
+                            span.main-light.font-size-big  (#{Math.floor(((doc.price-doc.discountPrice)/doc.price)*100)}% OFF)
+                        else
+                            span Rs. #{doc.price}
+                    p.text-success.fw-bold= doc.active ? "In Stock" : "Out of Stock"
+                    hr
+                    if doc.productType === "colorOnly" || doc.productType === "colorWithSize"
+                        div
+                            p.m-0.p-0.fw-bold.mt-2.mb-2 SELECT COLOR
+                            .d-flex.p-1
+                                each ban in doc.productDetails
+                                    img.selection_image.border.p-2.ms-2.cursor-pointer(src=ban.bannerImage,data-color=ban.ecmpsId)
+                    .row
+                        if doc.productType === "sizeOnly" || doc.productType === "colorWithSize"
+                            .col-4
+                                p.m-0.p-0.fw-bold.mt-2.mb-2 SELECT SIZE
+                                select.form-select#size_selection(aria-label='Default select example')
+                                    each val in doc.productDetails[0].subDetails
+                                        option(value=val.ecmpssId)= val.size
+                                -const orginVal = JSON.stringify(doc.productDetails[0].subDetails)
+                                if doc.productType === "sizeOnly" 
+                                    #rm_content
+                                        script.
+                                            let docVals ="#{orginVal}".replace(/&quot;/g, '"')
+                                            docVals = JSON.parse(docVals);
+
+                                            const size_selection = document.getElementById('size_selection');
+                                            size_selection.addEventListener('change',e=>{
+                                                e.preventDefault();
+                                                docVals.map(el=>{
+                                                    if(el.ecmpssId === e.target.value){
+                                                        const pri_html = el.discountPrice
+                                                            ? `
+                                                            <span>Rs. ${el.discountPrice}</span>
+                                                            <span class="text-decoration-line-through text-secondary fw-normal fs-6">Rs.${
+                                                                el.price
+                                                            }</span>
+                                                            <span class="main-light fs-6"> (${Math.floor(
+                                                                ((el.price - el.discountPrice) / el.price) *
+                                                                    100
+                                                            )}% OFF)</span>
+                                                            `
+                                                                : ` <span>Rs. ${el.price}</span>`;
+                                                            const price_details =                        document.getElementById('price_details');
+                                                            price_details.replaceChildren();
+                                                            price_details.insertAdjacentHTML(
+                                                                'beforeend',
+                                                                pri_html
+                                                            );
+                                                    }
+                                                })
+                                            })
+                                            document.getElementById('rm_content').remove()
+
+                        .col-4
+                            p.m-0.p-0.fw-bold.mt-2.mb-2.text-uppercase Quantity
+                            .d-flex
+                                p.m-0.input-size.p-1.ps-3.pe-3.border.cursor-pointer#sub_quantity
+                                    | -
+                                p.m-0.input-count.p-1.ps-4.pe-4.border#count_quantity 1
+                                p.m-0.input-size.p-1.ps-3.pe-3.border.cursor-pointer#add_quantity
+                                    | +
+                    .d-flex.button-card
+                        a.buy-now.buy_order(type="button" ) Buy Now
+                        a.add-cart.add_to_cart(type="button")
+                            i.bi.bi-bag
+                            |  Add to Cart
+                        a.wishlist-add.add_to_wishlist(type='button' data-id=doc.ecmpeId)
+                            i.bi.bi-heart
+                            |  Save to Wishlist
+                    .button-card-mobile
+                        a.buy-now.d-block.text-center.buy_order(href='#') Buy Now
+                        a.add-cart.d-block.text-center.ms-0.add_to_cart(type="button" )
+                            i.bi.bi-bag
+                            |  Add to Cart
+                        a.wishlist-add.d-block.text-center.ms-0.add_to_wishlist(type="button" data-id=doc.ecmpeId)
+                            i.bi.bi-heart
+                            |  Save to Wishlist
+                    hr.m-0.p-0.mt-2
+                    p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase DELIVERY OPTIONS
+                    p.text-secondary.mt-4.fs-6 100% Original Products
+                    p.text-secondary.mt-4.fs-6 Pay on delivery might be available
+                    p.text-secondary.mt-4.fs-6 Easy 14 days returns and exchanges
+                    p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase PRODUCT DETAILS
+                    p.text-secondary.mt-4.fs-6= doc.description
+                    if doc.specification && doc.specification.length
+                        p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase Product Specification
+                        each spc in doc.specification
+                            .row
+                                .col-3
+                                    p.fw-bold.text-secondary= spc.title
+                                .col-4
+                                    p.text-secondary=spc.description
+                    if doc.features.length
+                        p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase Features
+                            each fea in doc.features
+                                .row
+                                    .col-3
+                                        p.fw-bold= fea.title
+                                    .col-4
+                                        p= fea.description
+                    if doc.specification.length
+                        p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase Specification
+                            each fea in doc.specification
+                                .row
+                                    .col-3
+                                        p.fw-bold= fea.title
+                                    .col-4
+                                        p= fea.description
+                    p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase Top Reviews
+                    each docs in doc.reviews
+                        .review-card
+                            .d-flex.m-0
+                                i.bi.bi-person-circle.text-secondary.fs-4
+                                p.text-secondary.m-0.mt-2.ms-3= docs.userId.name
+                            .d-flex.m-0
+                                each docv in [1,2,3,4,5]
+                                    i.bi.main-light(class=docv <= docs.rating ? "bi-star-fill" : "bi-star")
+                                //- p.fw-bold.m-0.ms-3 Title of the Review
+                            p.text-secondary.m-0
+                                | Reviewed At : #{new Date(doc.createdAt).toLocaleString()}
+                            p.Verified-Purchase.m-0 Verified Purchase
+                            p.text-secondary.m-0= docs.review
+                // Review and Similer Product Section
+            hr
+            p.m-0.p-0.fw-bold.mt-4.mb-2.text-uppercase Recommended Products
+            .row.row-cols-2.row-cols-md-5.g-1
+            .container-fluid
+                .swiper
+                    .slide-container.swiper1
+                        .card-wrapper.swiper-wrapper
+                            each doc in recommendedProduct
+                                a(href=`/shop/product/${doc.slug}`)
+                                    .card.swiper-slide
+                                        img.product(src=doc.bannerImage alt='mouse corsair')
+                                        div
+                                            a.text-dark()=doc.name
+                                            if doc.discountPrice
+                                                p.p-0.m-0.fw-bold.fw-bold $ #{doc.discountPrice} 
+                                                    span.text-decoration-line-through.text-secondary $ #{doc.price}
+                                                    -const dis = ((doc.price-doc.discountPrice)/doc.price)*100
+                                                    |(#{Math.floor(dis)}% OFF)
+                                            else 
+                                                p.p-0.m-0.fw-bold.fw-bold $ #{doc.price} (0% OFF)
+
+
+                        .swiper-button-next.swiper-navBtn
+                        .swiper-button-prev.swiper-navBtn
+                        .swiper-pagination.swiper-pagination-1
